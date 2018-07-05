@@ -1,0 +1,72 @@
+steps:
+# Build api_descriptor.pb (needed to create Cloud Endpoints service)
+- name: 'gcr.io/google_appengine/python'
+  entrypoint: 'bash'
+  args:
+  - '-e'
+  - '-c'
+  - |
+    pip install grpcio grpcio-tools
+    mkdir -p target
+    mkdir -p /go/src/app
+    cp -a . /go/src/app/
+    cd /go/src/app
+    git clone https://github.com/googleapis/googleapis.git
+    python -m grpc_tools.protoc \
+      --include_imports \
+      --include_source_info \
+      --proto_path=.:googleapis \
+      --descriptor_set_out=/workspace/target/api_descriptor.pb \
+      todo/todo.proto
+
+
+# Build Container
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/todo:$BUILD_ID', '.']
+
+
+# Push to Container Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ["push", "gcr.io/$PROJECT_ID/todo:$BUILD_ID"]
+
+
+# Prepare Kubernetes Manifest
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args:
+  - '-e'
+  - '-c'
+  - |
+    # Dynamically create service name based on the current project ID
+    SERVICE_NAME=todo.endpoints.$PROJECT_ID.cloud.goog
+
+    # Deploy to Cloud Endpoints (note that some escaping is necessary
+    # for bash variable references)
+    sed s/SERVICE_NAME/$$SERVICE_NAME/g api_config.yaml > target/api_config.yaml && \
+        gcloud endpoints services deploy target/api_descriptor.pb target/api_config.yaml
+
+    # Obtain the service config ID created by the deployment to Cloud Endpoints
+    SERVICE_CONFIG_ID=`gcloud endpoints services describe $$SERVICE_NAME --format=value\(serviceConfig.id\)`
+
+    # Substitute variables in Kubernetes manifest
+    mkdir -p target
+    cat deployment.yaml | \
+    sed s/SERVICE_NAME/$$SERVICE_NAME/g | sed s/BUILD_ID/$BUILD_ID/g | sed s/SERVICE_CONFIG_ID/$$SERVICE_CONFIG_ID/g | sed s/PROJECT_ID/$PROJECT_ID/g \
+    > target/deployment.yaml
+
+
+# Perform Kubernetes Deployment
+- name: 'gcr.io/cloud-builders/kubectl'
+  entrypoint: 'bash'
+  args:
+  - '-e'
+  - '-c'
+  - |
+    gcloud container clusters get-credentials --project="$PROJECT_ID" --zone="$_ZONE" "$_CLUSTER" 
+
+    kubectl apply -f target/deployment.yaml  
+
+images:
+- 'gcr.io/$PROJECT_ID/todo:$BUILD_ID'
+
+timeout: 3600s
