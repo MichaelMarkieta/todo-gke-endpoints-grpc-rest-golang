@@ -56,7 +56,7 @@ func (s *server) GetTodos(_ *empty.Empty, stream pb.Todo_GetTodosServer) error {
 // UPDATE one todo
 
 // DELETE one todo
-func (s *server) DeleteTodo(request *pb.DeleteTodoRequest) (_ *empty.Empty, error) {
+func (s *server) DeleteTodo(ctx context.Context, request *pb.DeleteTodoRequest) (_ *empty.Empty, error) {
 	y := s.todos[:0]
 	for _, todo := range s.todos {
     		if todo.Id != request.Id {
@@ -68,7 +68,7 @@ func (s *server) DeleteTodo(request *pb.DeleteTodoRequest) (_ *empty.Empty, erro
 }
 
 // DELETE all todos
-func (s *server) DeleteTodos(_ *empty.Empty) (_ *empty.Empty, error) {
+func (s *server) DeleteTodos(ctx context.Context, _ *empty.Empty) (_ *empty.Empty, error) {
 	s.todos = []*pb.Todo
 	return nil
 }

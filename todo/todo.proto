@@ -5,7 +5,7 @@ package todo;
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto"; 
 
-service Todo {  
+service Todos {  
 
   // CREATE one Todo
   rpc CreateTodo(CreateTodoRequest) returns (Todo) {
@@ -23,7 +23,7 @@ service Todo {
   }
 
   // READ all Todos
-  rpc GetTodos(google.protobuf.Empty) returns (TodoList) {
+  rpc GetTodos(google.protobuf.Empty) returns (stream TodoList) {
     option (google.api.http) = {
       get: "/v1/todos"
     };
