@@ -2,10 +2,6 @@ FROM grpc/go:1.0
 
 RUN apt-get update && apt-get install git -y
 
-# Install Golang gRPC and Protobuf packages
-#RUN go get -u github.com/golang/protobuf/proto
-#RUN export PATH=$PATH:$GOPATH/bin
-
 # Copy source into app directory
 COPY . /go/src/app
 WORKDIR /go/src/app
