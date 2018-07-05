@@ -56,7 +56,7 @@ func (s *server) GetTodos(_ *empty.Empty, stream pb.Todo_GetTodosServer) error {
 func (s *server) UpdateTodo(ctx context.Context, request *pb.UpdateTodoRequest) (*empty.Empty, error) {
 	for _, todo := range s.todos {
 		if todo.Id == request.Id {
-			todo.Task = request.Task
+			todo.Task = request.Message.Task
 		}
 	}
 	return &empty.Empty{}, nil

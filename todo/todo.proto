@@ -33,7 +33,7 @@ service Todo {
   rpc UpdateTodo(UpdateTodoRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/v1/todos/{id}"
-      body: "task"
+      body: "message"
     };
   }
 
@@ -74,7 +74,7 @@ message GetTodoRequest {
 
 message UpdateTodoRequest {
   string id = 1;
-  string task = 2;
+  OneTodo message = 2;
 }
 
 message DeleteTodoRequest {
