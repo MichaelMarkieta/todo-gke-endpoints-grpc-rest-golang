@@ -1,0 +1,26 @@
+type: google.api.Service
+config_version: 3
+
+name: SERVICE_NAME
+
+title: Todo API
+
+apis:
+- name: todo.Todo
+
+usage:
+  rules:
+    - selector: "todo.Todo.CreateTodo"
+      allow_unregistered_calls: true
+    - selector: "todo.Todo.GetTodo"
+      allow_unregistered_calls: true
+    - selector: "todo.Todo.GetTodos"
+      allow_unregistered_calls: true
+    - selector: "todo.Todo.UpdateTodo"
+      allow_unregistered_calls: true
+    - selector: "todo.Todo.DeleteTodo"
+      allow_unregistered_calls: true
+    - selector: "todo.Todo.DeleteTodos"
+      allow_unregistered_calls: true
+    - selector: "todo.Todo.GetHealth"
+      allow_unregistered_calls: true
