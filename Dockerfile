@@ -19,4 +19,4 @@ RUN protoc \
 RUN go get -v app/server
 RUN go install app/server
 
-ENTRYPOINT ["go/bin/server"]
+ENTRYPOINT ["/go/bin/server"]
