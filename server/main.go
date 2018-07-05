@@ -53,7 +53,14 @@ func (s *server) GetTodos(_ *empty.Empty, stream pb.Todo_GetTodosServer) error {
 }
 
 // UPDATE one todo
-
+func (s *server) UpdateTodo(ctx context.Context, request *pb.UpdateTodoRequest) (*empty.Empty, error) {
+	for _, todo := range s.todos {
+		if todo.Id == request.Id {
+			todo.Task = request.Task
+		}
+	}
+	return &empty.Empty{}, nil
+}
 
 // DELETE one todo
 func (s *server) DeleteTodo(ctx context.Context, request *pb.DeleteTodoRequest) (*empty.Empty, error) {
