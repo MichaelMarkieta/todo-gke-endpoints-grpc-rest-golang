@@ -21,7 +21,7 @@ type server struct {
 }
 
 // CREATE one todo
-func (s, *server) CreateTodo(ctx context.Context, todo *pb.Todo) (*pb.Todo, error) {
+func (s *server) CreateTodo(ctx context.Context, todo *pb.Todo) (*pb.Todo, error) {
 	s.todos, err = append(s.todos, todo)
 	if err != nil {
 		return err
@@ -30,7 +30,7 @@ func (s, *server) CreateTodo(ctx context.Context, todo *pb.Todo) (*pb.Todo, erro
 }
 
 // READ one todo
-func (s, *server) GetTodo(request *pb.GetTodoRequest) (*pb.Todo, error) {
+func (s *server) GetTodo(request *pb.GetTodoRequest) (*pb.Todo, error) {
 	var oneTodo *pb.Todo
 	for _, todo := range s.todos {
 		if todo.Id == request.Id {
@@ -44,7 +44,7 @@ func (s, *server) GetTodo(request *pb.GetTodoRequest) (*pb.Todo, error) {
 }
 
 // READ all todos
-func (s, *server) GetTodos(_ *empty.Empty, stream pb.Todo_GetTodosServer) error {
+func (s *server) GetTodos(_ *empty.Empty, stream pb.Todo_GetTodosServer) error {
 	for _, todo := range s.todos {
 		if err := stream.Send(todo); err != nil {
 			return err
@@ -56,8 +56,22 @@ func (s, *server) GetTodos(_ *empty.Empty, stream pb.Todo_GetTodosServer) error 
 // UPDATE one todo
 
 // DELETE one todo
+func (s *server) DeleteTodo(request *pb.DeleteTodoRequest) (_ *empty.Empty, error) {
+	y := s.todos[:0]
+	for _, todo := range s.todos {
+    		if todo.Id != request.Id {
+			y = append(y, todo)
+		}
+	}
+	s.todos = y
+	return nil
+}
 
 // DELETE all todos
+func (s *server) DeleteTodos(_ *empty.Empty) (_ *empty.Empty, error) {
+	s.todos = []*pb.Todo
+	return nil
+}
 
 func main() {
 	flag.Parse() 								// parse declared command line flags
