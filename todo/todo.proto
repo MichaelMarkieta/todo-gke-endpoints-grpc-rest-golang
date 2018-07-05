@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package todo;
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto"; 
+
+service Todo {  
+
+  // CREATE one Todo
+  rpc CreateTodo(CreateTodoRequest) returns (Todo) {
+    option (google.api.http) = {
+      post: "/v1/todos"
+      body: "message"
+    }
+  }
+
+  // READ one Todo
+  rpc GetTodo(GetTodoRequest) returns (Todo) {
+    option (google.api.http) = {
+      get: "/v1/todos/{id}"
+    };
+  }
+
+  // READ all Todos
+  rpc GetTodos(google.protobuf.Empty) returns (TodoList) {
+    option (google.api.http) = {
+      get: "/v1/todos"
+    };
+  }
+
+  // UPDATE one Todo
+  rpc UpdateTodo(UpdateTodoRequest) returns (Todo) {
+    option (google.api.http) = {
+      put: "/v1/todos/{id}"
+      body: "message"
+    }
+  }
+
+  // DELETE one Todo
+  rpc DeleteTodo(DeleteTodoRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/todos/{id}"
+    }
+  }
+
+  // DELETE all Todos
+  rpc DeleteTodos(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/todos"
+    }
+  }
+  
+  // Ingress Health Check
+  rpc GetHealth(google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      get: "/v1/health"
+    };
+  }
+}
+
+message Todo {
+  string id = 1;
+  string task = 2;
+}
+
+message TodoList {
+  repeated Todo todos = 1;
+}
+
+message CreateTodoRequest {
+  Todo message = 1;
+}
+
+message GetTodoRequest {
+  string id = 1;
+}
+
+message UpdateTodoRequest {
+  string id = 1;
+  Todo message = 2;
+}
+
+message DeleteTodoRequest {
+  string id = 1;
+}
