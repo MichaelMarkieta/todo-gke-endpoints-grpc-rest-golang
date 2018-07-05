@@ -1,12 +1,10 @@
-FROM golang:alpine
+FROM grpc/go:1.0
 
-RUN apk update && apk add git protobuf
+RUN apt-get update && apt-get install git -y
 
 # Install Golang gRPC and Protobuf packages
-RUN go get -u google.golang.org/grpc
-RUN go get -u github.com/golang/protobuf/proto
-RUN go get -u github.com/golang/protobuf/protoc-gen-go
-RUN export PATH=$PATH:$GOPATH/bin
+#RUN go get -u github.com/golang/protobuf/proto
+#RUN export PATH=$PATH:$GOPATH/bin
 
 # Copy source into app directory
 COPY . /go/src/app
