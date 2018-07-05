@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: grpc-todo
+spec:
+  ports:
+  - port: 80
+    targetPort: 9000
+    protocol: TCP
+    name: http2
+  selector:
+    app: grpc-todo
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: http-todo
+spec:
+  ports:
+  - port: 80
+    targetPort: 9001
+    protocol: TCP
+    name: http
+  selector:
+    app: grpc-todo
+  type: NodePort
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-todo
+spec:
+  backend:
+    serviceName: http-todo
+    servicePort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: grpc-todo
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: grpc-todo
+    spec:
+      containers:
+      - name: esp
+        image: gcr.io/endpoints-release/endpoints-runtime:1
+        args: [
+          "--http2_port=9000",                 # gRPC
+          "--http_port=9001",                  # HTTP
+          "--service=SERVICE_NAME",
+          "--version=SERVICE_CONFIG_ID",
+          "--backend=grpc://127.0.0.1:50051"
+        ]
+        ports:
+          - containerPort: 9000
+          - containerPort: 9001
+        livenessProbe:				# Used by deployment controller
+          httpGet:
+            path: /v1/health
+            port: 9001				# Pass request thru ESP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:				# Used by Ingress/GCLB
+          httpGet:
+            path: /v1/health
+            port: 9001				# Pass request thru ESP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+      - name: todo
+        image: gcr.io/PROJECT_ID/todo:BUILD_ID
+        ports:
+          - containerPort: 50051
