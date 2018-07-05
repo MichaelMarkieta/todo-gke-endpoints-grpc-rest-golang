@@ -35,10 +35,6 @@ gcloud projects add-iam-policy-binding \
     $(gcloud config get-value core/project) \
     --member serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com \
     --role roles/servicemanagement.admin
-gcloud projects add-iam-policy-binding \
-     $(gcloud config get-value core/project) \
-     --member serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com \
-     --role roles/servicemanagement.serviceController
 
 # Create a Google Kubernetes Engine Cluster
 gcloud container clusters create $CLUSTER
