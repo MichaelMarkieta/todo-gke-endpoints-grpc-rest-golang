@@ -12,7 +12,7 @@ service Todo {
     option (google.api.http) = {
       post: "/v1/todos"
       body: "message"
-    }
+    };
   }
 
   // READ one Todo
@@ -34,21 +34,21 @@ service Todo {
     option (google.api.http) = {
       put: "/v1/todos/{id}"
       body: "message"
-    }
+    };
   }
 
   // DELETE one Todo
   rpc DeleteTodo(DeleteTodoRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       delete: "/v1/todos/{id}"
-    }
+    };
   }
 
   // DELETE all Todos
   rpc DeleteTodos(google.protobuf.Empty) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       delete: "/v1/todos"
-    }
+    };
   }
   
   // Ingress Health Check
