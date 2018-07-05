@@ -20,12 +20,13 @@ gcloud services enable container.googleapis.com
 gcloud services enable cloudbuild.googleapis.com
 gcloud services enable servicecontrol.googleapis.com
 gcloud services enable servicemanagement.googleapis.com
+gcloud services enable endpoints.googleapis.com
 
 # Assign additional roles to the Google Container Builder service account
 gcloud projects add-iam-policy-binding \
     $(gcloud config get-value core/project) \
     --member serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com \
-    --role roles/viewer
+    --role roles/editor
 gcloud projects add-iam-policy-binding \
     $(gcloud config get-value core/project) \
     --member serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com \
@@ -34,6 +35,10 @@ gcloud projects add-iam-policy-binding \
     $(gcloud config get-value core/project) \
     --member serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com \
     --role roles/servicemanagement.admin
+gcloud projects add-iam-policy-binding \
+     $(gcloud config get-value core/project) \
+     --member serviceAccount:$PROJECT_NUMBER@cloudbuild.gserviceaccount.com \
+     --role roles/servicemanagement.serviceController
 
 # Create a Google Kubernetes Engine Cluster
 gcloud container clusters create $CLUSTER
