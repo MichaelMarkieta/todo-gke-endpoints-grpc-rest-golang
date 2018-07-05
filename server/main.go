@@ -37,7 +37,7 @@ func (s *server) GetTodo(ctx context.Context, request *pb.GetTodoRequest) (*pb.O
 		}
 	}
 	if oneTodo == nil {
-		return nil, nil
+		return &empty.Empty{}, nil
 	}
 	return &pb.OneTodo{Id: oneTodo.Id, Task: oneTodo.Task}, nil
 }
