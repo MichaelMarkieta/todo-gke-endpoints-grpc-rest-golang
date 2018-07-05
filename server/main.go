@@ -5,6 +5,7 @@ import (
 	"net"
 	"log"
 
+	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
@@ -20,8 +21,27 @@ type server struct {
 }
 
 // CREATE one todo
+func (s, *server) CreateTodo(ctx context.Context, todo *pb.Todo) (*pb.Todo, error) {
+	s.todos, err = append(s.todos, todo)
+	if err != nil {
+		return err
+	}
+	return &pb.Todo{Id: todo.Id, Task: todo.Task}, nil
+}
 
 // READ one todo
+func (s, *server) GetTodo(request *pb.GetTodoRequest) (*pb.Todo, error) {
+	var oneTodo *pb.Todo
+	for _, todo := range s.todos {
+		if todo.Id == request.Id {
+			oneTodo = todo
+		}
+	}
+	if oneTodo == nil {
+		return nil
+	}
+	return &pb.Todo{Id: oneTodo.Id, Task: oneTodo.Task}, nil
+}
 
 // READ all todos
 func (s, *server) GetTodos(_ *empty.Empty, stream pb.Todo_GetTodosServer) error {
