@@ -5,7 +5,7 @@ RUN apk update && apk add git protobuf
 # Install Golang gRPC and Protobuf packages
 RUN go get -u google.golang.org/grpc
 RUN go get -u github.com/golang/protobuf/proto
-RUN go get -u github.com/golang/profobuf/protobuf-gen-go
+RUN go get -u github.com/golang/protobuf/protobuf-gen-go
 RUN export PATH=$PATH:$GOPATH/bin
 
 # Copy source into app directory
