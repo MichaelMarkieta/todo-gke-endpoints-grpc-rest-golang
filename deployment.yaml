@@ -26,11 +26,32 @@ spec:
     app: grpc-todo
   type: NodePort
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: http-swagger-ui
+spec:
+  ports:
+  - port: 81
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    app: grpc-guestbook
+  type: NodePort
+---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: ingress-todo
 spec:
+  rules:
+  - http:
+      paths:
+      - path: /swagger/*
+        backend:
+          serviceName: http-swagger-ui
+          servicePort: 81
   backend:
     serviceName: http-todo
     servicePort: 80
@@ -121,3 +142,12 @@ spec:
         image: gcr.io/PROJECT_ID/todo:BUILD_ID
         ports:
           - containerPort: 50051
+      - name: swagger-ui
+        image: swaggerapi/swagger-ui
+        ports:
+          - containerPort: 8080
+        env:
+          - name: API_URL
+            value: /openapi/openapi.json
+          - name: BASE_URL
+            value: /swagger/
