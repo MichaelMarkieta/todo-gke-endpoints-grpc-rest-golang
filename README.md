@@ -49,7 +49,7 @@ gcloud container builds submit --config=cloudbuild.yaml --substitutions _ZONE=$Z
 # Swagger UI
 
 ```
-HTTP_INGRESS_IP=$(kubectl get ingress ingress-guestbook \
+HTTP_INGRESS_IP=$(kubectl get ingress ingress-todo \
     --output=jsonpath={.status.loadBalancer.ingress[0].ip})
 echo http://$HTTP_INGRESS_IP/swagger/
 ```
