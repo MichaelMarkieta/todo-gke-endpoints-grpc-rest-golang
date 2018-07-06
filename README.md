@@ -5,6 +5,9 @@ This is a proof of concept for a Golang gRPC API server, running in Google Kuber
 # Instructions
 
 ```bash
+# Clone the repo and enter it
+git clone https://github.com/MichaelMarkieta/todo-gke-endpoints-grpc-rest-golang.git && cd todo-gke-endpoints-grpc-rest-golang
+
 # Set up environmental variables
 PROJECT_ID=Your-Project-ID
 PROJECT_NUMBER=$(gcloud projects describe $(gcloud config get-value core/project) --format=value\(projectNumber\)) 
