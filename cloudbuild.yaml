@@ -30,6 +30,23 @@ steps:
   args: ["push", "gcr.io/$PROJECT_ID/todo:$BUILD_ID"]
 
 
+# Build OpenAPI spec
+- name: 'grpc/go'
+  entrypoint: '/bin/sh'
+  args:
+  - '-e'
+  - '-c'
+  - |
+    cd /workspace
+
+    go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
+    go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
+    go get -u github.com/golang/protobuf/protoc-gen-go
+
+    # Generate target/todo.swagger.json
+    protoc -I. todo/todo.proto --swagger_out=logtostderr=true:target
+
+
 # Prepare Kubernetes Manifest
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: 'bash'
@@ -63,6 +80,13 @@ steps:
   - '-c'
   - |
     gcloud container clusters get-credentials --project="$PROJECT_ID" --zone="$_ZONE" "$_CLUSTER" 
+
+    kubectl create configmap todo-openapi-specification \
+        --from-file openapi.json=target/todo.swagger.json \
+        -o yaml \
+        --dry-run > target/kubernetes-todo-openapi-spec.yaml
+
+    kubectl apply -f target/kubernetes-todo-openapi-spec.yaml
 
     kubectl apply -f target/deployment.yaml  
 

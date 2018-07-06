@@ -61,6 +61,10 @@ data:
         add_header 'Access-Control-Expose-Headers' $cors_expose_headers;
         add_header 'Access-Control-Max-Age' $cors_max_age;
 
+        location /openapi {
+            alias /var/www/openapi;
+        }
+
 kind: ConfigMap
 metadata:
   name: nginx-cors-conf
@@ -80,6 +84,9 @@ spec:
         - name: nginx-conf-d
           configMap:
             name: nginx-cors-conf 
+        - name: openapi-spec
+          configMap:
+            name: todo-openapi-specification
       containers:
       - name: esp
         image: gcr.io/endpoints-release/endpoints-runtime:1
@@ -108,6 +115,8 @@ spec:
         volumeMounts:
           - name: nginx-conf-d
             mountPath: /var/lib/nginx/extra/
+          - name: openapi-spec
+            mountPath: /var/www/openapi
       - name: todo
         image: gcr.io/PROJECT_ID/todo:BUILD_ID
         ports:
