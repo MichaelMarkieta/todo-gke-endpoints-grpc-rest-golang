@@ -44,11 +44,27 @@ gcloud container clusters create $CLUSTER
 
 # Deploy with Google Container Builder
 gcloud container builds submit --config=cloudbuild.yaml --substitutions _ZONE=$ZONE,_CLUSTER=$CLUSTER .
+
+# Deployment is ready for REST API calls when the Ingress IP is available and the containers are healthy
+while [[ -z ${HTTP_INGRESS_IP} ]]; do
+    unset HTTP_INGRESS_IP
+    HTTP_INGRESS_IP=$(kubectl get ingress ingress-todo --output=jsonpath={.status.loadBalancer.ingress[0].ip}); \
+    echo "Waiting for load balancer to come up..."; \
+    sleep 2
+done
+
+curl -v http://$HTTP_INGRESS_IP/v1/todos
 ```
 
 # Swagger UI
 
 ```
+# Visit the Swagger UI URL in your browser
 HTTP_INGRESS_IP=$(kubectl get ingress ingress-todo --output=jsonpath={.status.loadBalancer.ingress[0].ip})
 echo http://$HTTP_INGRESS_IP/swagger/
 ```
+
+# Todo
+
+* add gRPC client example
+* add SSL/TLS
