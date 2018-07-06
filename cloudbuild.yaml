@@ -38,13 +38,11 @@ steps:
   - '-c'
   - |
     cd /workspace
-
     go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
     go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
     go get -u github.com/golang/protobuf/protoc-gen-go
-
-    # Generate target/todo.swagger.json
-    protoc -I. todo/todo.proto --swagger_out=logtostderr=true:target
+    git clone https://github.com/googleapis/googleapis.git
+    protoc --proto_path=.:googleapis todo/todo.proto --swagger_out=logtostderr=true:target
 
 
 # Prepare Kubernetes Manifest
@@ -82,12 +80,11 @@ steps:
     gcloud container clusters get-credentials --project="$PROJECT_ID" --zone="$_ZONE" "$_CLUSTER" 
 
     kubectl create configmap todo-openapi-specification \
-        --from-file openapi.json=target/todo.swagger.json \
+        --from-file openapi.json=target/todo/todo.swagger.json \
         -o yaml \
         --dry-run > target/kubernetes-todo-openapi-spec.yaml
 
     kubectl apply -f target/kubernetes-todo-openapi-spec.yaml
-
     kubectl apply -f target/deployment.yaml  
 
 images:

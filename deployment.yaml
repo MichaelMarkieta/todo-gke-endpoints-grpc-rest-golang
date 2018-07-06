@@ -37,7 +37,7 @@ spec:
     protocol: TCP
     name: http
   selector:
-    app: grpc-guestbook
+    app: grpc-todo
   type: NodePort
 ---
 apiVersion: extensions/v1beta1
