@@ -45,3 +45,11 @@ gcloud container clusters create $CLUSTER
 # Deploy with Google Container Builder
 gcloud container builds submit --config=cloudbuild.yaml --substitutions _ZONE=$ZONE,_CLUSTER=$CLUSTER .
 ```
+
+# Swagger UI
+
+```
+HTTP_INGRESS_IP=$(kubectl get ingress ingress-guestbook \
+    --output=jsonpath={.status.loadBalancer.ingress[0].ip})
+echo http://$HTTP_INGRESS_IP/swagger/
+```
